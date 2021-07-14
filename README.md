@@ -1,2 +1,2 @@
 # ckl2POAM
-Conversion tool for 
+Tool for converting Checklist -> POA&M.
