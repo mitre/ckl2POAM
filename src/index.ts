@@ -5,10 +5,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as STIG from "STIG"
 import * as XlsxPopulate from "xlsx-populate";// Used for opening the spreadsheet as a template
-import * as template from '../resources/template.json';
-import { createCVD } from './convertStrings';
+import * as settings from '../settings.json';
+import { cci2nist, cleanStatus, convertToRawSeverity, createCVD, extractSolution } from './convertStrings';
 import moment = require('moment');
 const xml2js = require('xml2js');
+const prompt = require('prompt-sync')();
+
 
 // Logging
 const {createLogger, format, transports} = require('winston');
@@ -32,10 +34,14 @@ const STARTING_ROW = 8 // The row we start inserting controls into
 
 const files = fs.readdirSync(path.join(__dirname, '..', 'input'));
 if (files.length === 0) {
-    console.log('No files in the input directory.')
+    logger.log({
+        level: 'error',
+        file: 'none',
+        message: `No files to open`
+    })
 } else {
     // For all files in the input directory
-    files.forEach(async (fileName) => {
+    files.forEach((fileName) => {
         // Ignore files that start with . (e.g .gitignore)
         if (fileName.startsWith('.')) {
             return;
@@ -43,7 +49,7 @@ if (files.length === 0) {
         logger.log({
             level: 'info',
             file: fileName,
-            message: `Opening file ${fileName}`
+            message: `Opening file`
         })
         const parser = new xml2js.Parser();
         fs.readFile(path.join(__dirname, '..', 'input', fileName), function (readFileError, data) {
@@ -102,6 +108,10 @@ if (files.length === 0) {
                         file: fileName,
                         message: `Found ${vulnerabilities.length} vulnerabilities`
                     });
+
+                    const resourcesRequired = prompt(`What should the default value be for Resources Required? `)
+                    const officeOrg = prompt(`What should the default value be for Office/org? `)
+                    
                     // Read our template
                     XlsxPopulate.fromFileAsync(path.join(__dirname, '..', 'resources', 'POA&M Template.xlsm')).then((workBook) => {
                         // eMASS reads the first sheet in the notebook
@@ -113,16 +123,26 @@ if (files.length === 0) {
                         // For each vulnerability
                         vulnerabilities.forEach((vulnerability) => {
                             // Control Vulnerbility Description
-                            sheet.cell(`${template.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
-                            // Write the SV-Rule ID
-                            sheet.cell(`${template.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
-                            // Resources required
-                            sheet.cell(`${template.rows.resourcesRequired}${currentRow}`).value(template.defaults.resourcesRequired)
+                            sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
+                            // Secuirty Control Number
+                            sheet.cell(`${settings.rows.securityControlNumber}${currentRow}`).value(cci2nist(vulnerability.CCI_REF))
+                            // Office/org
+                            sheet.cell(`${settings.rows.officeOrg}${currentRow}`).value(officeOrg)
+                            // Security Checks
+                            sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
+                            // Resources Required
+                            sheet.cell(`${settings.rows.resourcesRequired}${currentRow}`).value(resourcesRequired)
                             // Scheduled Completion Date
                             // Default is one year from today
-                            sheet.cell(`${template.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
+                            sheet.cell(`${settings.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
+                            // Status
+                            sheet.cell(`${settings.rows.status}${currentRow}`).value(cleanStatus(vulnerability.STATUS))
+                            // Raw Severity
+                            sheet.cell(`${settings.rows.rawSeverity}${currentRow}`).value(convertToRawSeverity(vulnerability.Severity))
+                            // Reccomendations
+                            sheet.cell(`${settings.rows.reccomendations}${currentRow}`).value(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS))
                             // Go to the next row
-                            currentRow += 1
+                            currentRow += settings.rowsToSkip + 1
                         })
                         return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}.xlsm`));
                     })

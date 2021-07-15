@@ -1,0 +1,17 @@
+{
+    "cells": {
+        "dateExported": "D2"
+    },
+    "rows": {
+        "controlVulnerbilityDescription": "C",
+        "securityControlNumber": "D",
+        "officeOrg": "E",
+        "securityChecks": "F",
+        "resourcesRequired": "G",
+        "scheduledCompletionDate": "H",
+        "status": "L",
+        "rawSeverity": "N",
+        "reccomendations": "V"
+    },
+    "rowsToSkip": 3
+}
