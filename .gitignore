@@ -1,2 +1,4 @@
 
 node_modules/
+input/*.ckl
+output/*.xlsm
