@@ -2,8 +2,13 @@
     "cells": {
         "dateExported": "D2"
     },
+    "defaults": {
+        "resourcesRequired": "na"
+    },
     "rows": {
         "controlVulnerbilityDescription": "C",
-        "securityChecks": "F"
+        "securityChecks": "F",
+        "resourcesRequired": "G",
+        "scheduledCompletionDate": "H"
     }
 }

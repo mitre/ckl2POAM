@@ -5,7 +5,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as STIG from "STIG"
 import * as XlsxPopulate from "xlsx-populate";// Used for opening the spreadsheet as a template
-import * as template from './resources/template.json';
+import * as template from '../resources/template.json';
+import { createCVD } from './convertStrings';
+import moment = require('moment');
 const xml2js = require('xml2js');
 
 // Logging
@@ -28,7 +30,7 @@ const logger = createLogger({
 // Configurable settings
 const STARTING_ROW = 8 // The row we start inserting controls into
 
-const files = fs.readdirSync(path.join(__dirname, 'input'));
+const files = fs.readdirSync(path.join(__dirname, '..', 'input'));
 if (files.length === 0) {
     console.log('No files in the input directory.')
 } else {
@@ -44,7 +46,7 @@ if (files.length === 0) {
             message: `Opening file ${fileName}`
         })
         const parser = new xml2js.Parser();
-        fs.readFile(path.join(__dirname, 'input', fileName), function (readFileError, data) {
+        fs.readFile(path.join(__dirname, '..', 'input', fileName), function (readFileError, data) {
             if (readFileError) {
                 logger.log({
                     level: 'error',
@@ -101,19 +103,28 @@ if (files.length === 0) {
                         message: `Found ${vulnerabilities.length} vulnerabilities`
                     });
                     // Read our template
-                    XlsxPopulate.fromFileAsync(path.join(__dirname, 'resources', 'POA&M Template.xlsm')).then((workBook) => {
+                    XlsxPopulate.fromFileAsync(path.join(__dirname, '..', 'resources', 'POA&M Template.xlsm')).then((workBook) => {
                         // eMASS reads the first sheet in the notebook
                         const sheet = workBook.sheet(0);
                         // The current row we are on
                         let currentRow = STARTING_ROW;
+                        // The scheduled completion date, default of one year from today
+                        const aYearFromNow = moment(new Date(new Date().setFullYear(new Date().getFullYear() + 1))).format('M/DD/YYYY')
                         // For each vulnerability
                         vulnerabilities.forEach((vulnerability) => {
+                            // Control Vulnerbility Description
+                            sheet.cell(`${template.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
                             // Write the SV-Rule ID
                             sheet.cell(`${template.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
+                            // Resources required
+                            sheet.cell(`${template.rows.resourcesRequired}${currentRow}`).value(template.defaults.resourcesRequired)
+                            // Scheduled Completion Date
+                            // Default is one year from today
+                            sheet.cell(`${template.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
                             // Go to the next row
                             currentRow += 1
                         })
-                        return workBook.toFileAsync(path.join(__dirname, 'output', `${fileName}.xlsm`));
+                        return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}.xlsm`));
                     })
                 }
             });
