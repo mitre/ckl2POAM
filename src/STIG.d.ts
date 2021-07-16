@@ -62,7 +62,7 @@ declare module "STIG" {
       STIG_UUID?: string;
       CCI_REF?: string;
       STIG_DATA?: STIGAttributes[] | null;
-      STATUS?: string;
+      STATUS?: "Open" | "NotAFinding" | "Not_Applicable" | "Not_Reviewed";
       FINDING_DETAILS?: string;
       COMMENTS?: string;
       SEVERITY_OVERRIDE?: string;

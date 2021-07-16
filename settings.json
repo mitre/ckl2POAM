@@ -10,7 +10,9 @@
         "resourcesRequired": "G",
         "scheduledCompletionDate": "H",
         "status": "L",
+        "comments": "M",
         "rawSeverity": "N",
+        "impactDescription": "T",
         "reccomendations": "V"
     },
     "rowsToSkip": 3

@@ -4,9 +4,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as STIG from "STIG"
-import * as XlsxPopulate from "xlsx-populate";// Used for opening the spreadsheet as a template
+const XlsxPopulate = require("xlsx-populate");// Used for opening the spreadsheet as a template
 import * as settings from '../settings.json';
-import { cci2nist, cleanStatus, convertToRawSeverity, createCVD, extractSolution } from './convertStrings';
+import { cci2nist, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl } from './convertStrings';
 import moment = require('moment');
 const xml2js = require('xml2js');
 const prompt = require('prompt-sync')();
@@ -69,6 +69,7 @@ if (files.length === 0) {
                         message: `An error occoured parsing the file: ${readFileError}`
                     })
                 } else {
+                    let infos: {title?: string, stigid?: string} = {};
                     let vulnerabilities: STIG.Vulnerability[] = []
                     const iStigs: STIG.iSTIG[] = []
                     const stigs = result.CHECKLIST.STIGS
@@ -77,7 +78,7 @@ if (files.length === 0) {
                         file: fileName,
                         message: `Found ${stigs.length} STIGs`
                     })
-                    // Get nested iSTIGs, not quite sure why there can be multiple.
+                    // Get nested iSTIGs
                     stigs.forEach((stig) => {
                         stig.iSTIG.forEach((iStig) => {
                             iStigs.push(iStig)
@@ -90,6 +91,13 @@ if (files.length === 0) {
                     })
                     // Get the controls/vulnerabilities from each stig
                     iStigs.forEach((iSTIG) => {
+                        iSTIG.STIG_INFO.forEach((info) => {
+                            info.SI_DATA.forEach((data) => {
+                                if(data.SID_DATA) {
+                                    infos[data.SID_NAME[0]] = data.SID_DATA[0]
+                                }
+                            })
+                        })
                         vulnerabilities = vulnerabilities.concat(iSTIG.VULN.map((vulnerability) => {
                             const values = {};
                             // Extract STIG_DATA
@@ -108,10 +116,8 @@ if (files.length === 0) {
                         file: fileName,
                         message: `Found ${vulnerabilities.length} vulnerabilities`
                     });
-
-                    const resourcesRequired = prompt(`What should the default value be for Resources Required? `)
                     const officeOrg = prompt(`What should the default value be for Office/org? `)
-                    
+                    let host = prompt(`What is the device name? `)
                     // Read our template
                     XlsxPopulate.fromFileAsync(path.join(__dirname, '..', 'resources', 'POA&M Template.xlsm')).then((workBook) => {
                         // eMASS reads the first sheet in the notebook
@@ -122,27 +128,41 @@ if (files.length === 0) {
                         const aYearFromNow = moment(new Date(new Date().setFullYear(new Date().getFullYear() + 1))).format('M/DD/YYYY')
                         // For each vulnerability
                         vulnerabilities.forEach((vulnerability) => {
-                            // Control Vulnerbility Description
-                            sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
-                            // Secuirty Control Number
-                            sheet.cell(`${settings.rows.securityControlNumber}${currentRow}`).value(cci2nist(vulnerability.CCI_REF))
-                            // Office/org
-                            sheet.cell(`${settings.rows.officeOrg}${currentRow}`).value(officeOrg)
-                            // Security Checks
-                            sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
-                            // Resources Required
-                            sheet.cell(`${settings.rows.resourcesRequired}${currentRow}`).value(resourcesRequired)
-                            // Scheduled Completion Date
-                            // Default is one year from today
-                            sheet.cell(`${settings.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
-                            // Status
-                            sheet.cell(`${settings.rows.status}${currentRow}`).value(cleanStatus(vulnerability.STATUS))
-                            // Raw Severity
-                            sheet.cell(`${settings.rows.rawSeverity}${currentRow}`).value(convertToRawSeverity(vulnerability.Severity))
-                            // Reccomendations
-                            sheet.cell(`${settings.rows.reccomendations}${currentRow}`).value(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS))
-                            // Go to the next row
-                            currentRow += settings.rowsToSkip + 1
+                            if(vulnerability.STATUS !== 'NotAFinding' && vulnerability.STATUS !== 'Not_Reviewed'){
+                                // Control Vulnerbility Description
+                                if(vulnerability.STATUS === 'Not_Applicable') {
+                                    sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value('Not Applicable')
+                                } else {
+                                    sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
+                                }
+                                // Secuirty Control Number
+                                sheet.cell(`${settings.rows.securityControlNumber}${currentRow}`).value(cci2nist(vulnerability.CCI_REF))
+                                // Office/org
+                                sheet.cell(`${settings.rows.officeOrg}${currentRow}`).value(officeOrg)
+                                // Security Checks
+                                sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
+                                // Scheduled Completion Date
+                                // Default is one year from today
+                                sheet.cell(`${settings.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
+                                // Status
+                                sheet.cell(`${settings.rows.status}${currentRow}`).value(cleanStatus(vulnerability.STATUS))
+                                // Comments
+                                if(vulnerability.STATUS === 'Open' || vulnerability.STATUS === 'Not_Applicable'){
+                                    if(host.startsWith('Nessus')) {
+                                        sheet.cell(`${settings.rows.comments}${currentRow}`).value(combineComments(vulnerability, extractSTIGUrl(vulnerability.FINDING_DETAILS)))
+                                    } else {
+                                        sheet.cell(`${settings.rows.comments}${currentRow}`).value(combineComments(vulnerability, host))
+                                    }
+                                }
+                                // Raw Severity
+                                sheet.cell(`${settings.rows.rawSeverity}${currentRow}`).value(convertToRawSeverity(vulnerability.Severity))
+                                // Impact Description
+                                sheet.cell(`${settings.rows.impactDescription}${currentRow}`).value(vulnerability.Vuln_Discuss)
+                                // Reccomendations
+                                sheet.cell(`${settings.rows.reccomendations}${currentRow}`).value(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS))
+                                // Go to the next row
+                                currentRow += settings.rowsToSkip + 1
+                            }
                         })
                         return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}.xlsm`));
                     })
