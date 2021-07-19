@@ -164,7 +164,7 @@ if (files.length === 0) {
                                 currentRow += settings.rowsToSkip + 1
                             }
                         })
-                        return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}.xlsm`));
+                        return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}-${new Date().toTimeString()}.xlsm`));
                     })
                 }
             });

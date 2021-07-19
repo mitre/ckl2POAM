@@ -1,7 +1,4 @@
 {
-    "cells": {
-        "dateExported": "D2"
-    },
     "rows": {
         "controlVulnerbilityDescription": "C",
         "securityControlNumber": "D",
@@ -15,5 +12,5 @@
         "impactDescription": "T",
         "reccomendations": "V"
     },
-    "rowsToSkip": 3
+    "rowsToSkip": 4
 }
