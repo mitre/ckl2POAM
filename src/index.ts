@@ -141,6 +141,8 @@ if (files.length === 0) {
                                 sheet.cell(`${settings.rows.officeOrg}${currentRow}`).value(officeOrg)
                                 // Security Checks
                                 sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
+                                // Resources Required
+                                sheet.cell(`${settings.rows.resourcesRequired}${currentRow}`).value('NA')
                                 // Scheduled Completion Date
                                 // Default is one year from today
                                 sheet.cell(`${settings.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
@@ -164,7 +166,7 @@ if (files.length === 0) {
                                 currentRow += settings.rowsToSkip + 1
                             }
                         })
-                        return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}-${new Date().toTimeString()}.xlsm`));
+                        return workBook.toFileAsync(path.join(__dirname, '..', 'output', `${fileName}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`));
                     })
                 }
             });
