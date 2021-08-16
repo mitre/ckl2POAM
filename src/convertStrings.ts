@@ -85,7 +85,7 @@ export function extractSolution(findingDetails: string): string | undefined {
 export function cci2nist(cci: string) {
     if (typeof cci === 'string') {
         if (cci in cci2nistmap) {
-            return cci2nistmap[cci] 
+            return cci2nistmap[cci].replace(' ', '')
         } else {
             return prompt(`What is the NIST ID for CCI ${cci}? `)
         }
