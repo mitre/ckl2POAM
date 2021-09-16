@@ -101,7 +101,7 @@ if (files.length === 0) {
                         vulnerabilities = vulnerabilities.concat(iSTIG.VULN.map((vulnerability) => {
                             const values = {};
                             // Extract STIG_DATA
-                            vulnerability.STIG_DATA.forEach((data) => {
+                            vulnerability.STIG_DATA.reverse().forEach((data) => {
                                 values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
                             });
                             // Extract remaining fields (status, finding deails, comments, security override, and severity justification)
