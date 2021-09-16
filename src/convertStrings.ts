@@ -52,6 +52,10 @@ export function cleanStatus(status: string) {
     }
 }
 
+export function replaceSpecialCharacters(text: string): string {
+    return text.replace(/'/g, '`').replace(/"/g, '`').replace(/</g, '(').replace(/>/g, ')').replace(/\\/, '\\')
+}
+
 function cleanComments(comments: string): string {
     return comments.replace(/Automated(.*?)project\.\n/, '').replace(/Profile shasum.*/sg, '').trim()
 }

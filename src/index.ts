@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as STIG from "STIG"
 const XlsxPopulate = require("xlsx-populate");// Used for opening the spreadsheet as a template
 import * as settings from '../settings.json';
-import { cci2nist, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl } from './convertStrings';
+import { cci2nist, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters } from './convertStrings';
 import moment = require('moment');
 const xml2js = require('xml2js');
 const prompt = require('prompt-sync')();
@@ -133,7 +133,7 @@ if (files.length === 0) {
                                 if(vulnerability.STATUS === 'Not_Applicable') {
                                     sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value('Not Applicable')
                                 } else {
-                                    sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value(createCVD(vulnerability))
+                                    sheet.cell(`${settings.rows.controlVulnerbilityDescription}${currentRow}`).value(replaceSpecialCharacters(createCVD(vulnerability)))
                                 }
                                 // Secuirty Control Number
                                 sheet.cell(`${settings.rows.securityControlNumber}${currentRow}`).value(cci2nist(vulnerability.CCI_REF))
@@ -159,9 +159,9 @@ if (files.length === 0) {
                                 // Raw Severity
                                 sheet.cell(`${settings.rows.rawSeverity}${currentRow}`).value(convertToRawSeverity(vulnerability.Severity))
                                 // Impact Description
-                                sheet.cell(`${settings.rows.impactDescription}${currentRow}`).value(vulnerability.Vuln_Discuss)
+                                sheet.cell(`${settings.rows.impactDescription}${currentRow}`).value(replaceSpecialCharacters(vulnerability.Vuln_Discuss))
                                 // Reccomendations
-                                sheet.cell(`${settings.rows.reccomendations}${currentRow}`).value(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS))
+                                sheet.cell(`${settings.rows.reccomendations}${currentRow}`).value(replaceSpecialCharacters(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS)))
                                 // Go to the next row
                                 currentRow += settings.rowsToSkip + 1
                             }
