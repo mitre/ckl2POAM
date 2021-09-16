@@ -9,6 +9,11 @@
         "status": "L",
         "comments": "M",
         "rawSeverity": "N",
+        "severity": "P",
+        "likelihood": "R",
+        "impact": "S",
+        "residualRiskLevel": "U",
+        "relevanceOfThreat": "Q",
         "impactDescription": "T",
         "reccomendations": "V"
     },

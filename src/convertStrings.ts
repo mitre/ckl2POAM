@@ -20,6 +20,67 @@ export function extractSTIGUrl(findingDetails: string): string | null {
     return ''
 }
 
+export function cklSeverityToPOAMSeverity(severity: string): string {
+    switch (severity) {
+        case 'none':
+          return '';
+        case 'low':
+          return 'Low';
+        case 'medium':
+          return 'Moderate'
+        case 'high':
+        case 'critical':
+          return 'High';
+      }
+}
+
+export function cklSeverityToRelevanceOfThreat(severity: string) {
+    return 'Moderate'
+}
+
+export function cklSeverityToLikelihood(severity: string) {
+    switch (severity) {
+        case 'none':
+          return '';
+        case 'low':
+          return 'Low';
+        case 'medium':
+          return 'Moderate'
+        case 'high':
+        case 'critical':
+          return 'Moderate';
+    }
+}
+
+export function cklSeverityToImpact(severity: string) {
+    switch (severity) {
+        case 'none':
+          return '';
+        case 'low':
+          return 'Low';
+        case 'medium':
+          return 'Moderate'
+        case 'high':
+        case 'critical':
+          return 'High';
+    }
+}
+
+export function cklSeverityToResidualRiskLevel(severity: string) {
+    switch (severity) {
+        case 'none':
+          return '';
+        case 'low':
+          return 'Low';
+        case 'medium':
+          return 'Moderate'
+        case 'high':
+        case 'critical':
+          return 'Moderate';
+      }
+}
+
+
 export function createCVD(vulnerability: STIG.Vulnerability): string {
     if (vulnerability.FINDING_DETAILS.indexOf('Solution :') !== -1){
         return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS.split('Solution :')[0]}`
