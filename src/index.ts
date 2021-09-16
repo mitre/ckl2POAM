@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as STIG from "STIG"
 const XlsxPopulate = require("xlsx-populate");// Used for opening the spreadsheet as a template
 import * as settings from '../settings.json';
-import { cci2nist, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters } from './convertStrings';
+import { cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters } from './convertStrings';
 import moment = require('moment');
 const xml2js = require('xml2js');
 const prompt = require('prompt-sync')();
@@ -158,6 +158,16 @@ if (files.length === 0) {
                                 }
                                 // Raw Severity
                                 sheet.cell(`${settings.rows.rawSeverity}${currentRow}`).value(convertToRawSeverity(vulnerability.Severity))
+                                // Severity
+                                sheet.cell(`${settings.rows.severity}${currentRow}`).value(cklSeverityToPOAMSeverity(vulnerability.Severity))
+                                // Relevance of Threat
+                                sheet.cell(`${settings.rows.relevanceOfThreat}${currentRow}`).value(cklSeverityToRelevanceOfThreat(vulnerability.Severity))
+                                // Likelihood
+                                sheet.cell(`${settings.rows.likelihood}${currentRow}`).value(cklSeverityToLikelihood(vulnerability.Severity))
+                                // Impact
+                                sheet.cell(`${settings.rows.impact}${currentRow}`).value(cklSeverityToImpact(vulnerability.Severity))
+                                // Residual Risk Level
+                                sheet.cell(`${settings.rows.residualRiskLevel}${currentRow}`).value(cklSeverityToResidualRiskLevel(vulnerability.Severity))
                                 // Impact Description
                                 sheet.cell(`${settings.rows.impactDescription}${currentRow}`).value(replaceSpecialCharacters(vulnerability.Vuln_Discuss))
                                 // Reccomendations
