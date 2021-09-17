@@ -6,6 +6,29 @@ Tool for converting Checklist -> POA&M.
 2. Install dependencies: `yarn install`
 3. Build the app: `yarn run build`
 
+## How to update:
+
+### Option 1 (Using git)
+1. Ensure you are in the folder containing ckl2POAM
+2. Stash any existing input/outputs `git stash --include-untracked`
+3. Update the repository: `git fetch`
+4. Pull the latest changes `git pull`
+5. Restore your files `git stash pop`
+6. Install dependencies: `yarn install`
+7. Build the app: `yarn run build`
+
+### Option 2 (Using Download as Zip on Windows)
+1. Delete your existing ckl2POAM folder
+2. Download the most recent version: https://github.com/mitre/ckl2POAM/archive/refs/heads/main.zip
+3. Open `install.ps1`, decline NodeJS and NPM install if it is already installed
+
+### Option 3 (Using Download as Zip on MacOS/Linux)
+1. Delete your existing ckl2POAM folder
+2. Download the most recent version: https://github.com/mitre/ckl2POAM/archive/refs/heads/main.zip
+3. Enter the ckl2POAM folder using the terminal
+4. Install dependencies: `yarn install`
+5. Build the app: `yarn run build`
+
 ## How to use:
 1. Put your `.ckl` checklist files into `input/`
 2. Run the script: `yarn run start`
