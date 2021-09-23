@@ -140,7 +140,7 @@ if (files.length === 0) {
                                 // Office/org
                                 sheet.cell(`${settings.rows.officeOrg}${currentRow}`).value(officeOrg)
                                 // Security Checks
-                                sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID)
+                                sheet.cell(`${settings.rows.securityChecks}${currentRow}`).value(vulnerability.Rule_ID.split(',')[0])
                                 // Resources Required
                                 sheet.cell(`${settings.rows.resourcesRequired}${currentRow}`).value('NA')
                                 // Scheduled Completion Date
