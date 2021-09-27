@@ -20,7 +20,10 @@ Tool for converting Checklist -> POA&M.
 ### Option 2 (Using Download as Zip on Windows)
 1. Delete your existing ckl2POAM folder
 2. Download the most recent version: https://github.com/mitre/ckl2POAM/archive/refs/heads/main.zip
-3. Open `setup.ps1`, decline NodeJS and NPM install if it is already installed
+2. Lower your PowerShell Execution Policy with `Set-Executionpolicy Unrestricted` (Press Win+X and choose Open PowerShell)
+3. Open `setup.ps1` 
+4. Follow the on-screen steps to install NodeJS and build the app
+5. Restore PowerShell Execution policy with `Set-Executionpolicy Default`
 
 ### Option 3 (Using Download as Zip on MacOS/Linux)
 1. Delete your existing ckl2POAM folder
