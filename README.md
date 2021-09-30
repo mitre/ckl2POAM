@@ -3,8 +3,8 @@ Tool for converting Checklist -> POA&M.
 
 ## How to install:
 1. Clone the repository: `git clone https://github.com/mitre/ckl2POAM`
-2. Install dependencies: `yarn install`
-3. Build the app: `yarn run build`
+2. Install dependencies: `npm install`
+3. Build the app: `npm run build`
 
 ## How to update:
 
@@ -14,8 +14,8 @@ Tool for converting Checklist -> POA&M.
 3. Update the repository: `git fetch`
 4. Pull the latest changes `git pull`
 5. Restore your files `git stash pop`
-6. Install dependencies: `yarn install`
-7. Build the app: `yarn run build`
+6. Install dependencies: `npm install`
+7. Build the app: `npm run build`
 
 ### Option 2 (Using Download as Zip on Windows)
 1. Delete your existing ckl2POAM folder
@@ -30,12 +30,12 @@ Tool for converting Checklist -> POA&M.
 1. Delete your existing ckl2POAM folder
 2. Download the most recent version: https://github.com/mitre/ckl2POAM/archive/refs/heads/main.zip
 3. Enter the ckl2POAM folder using the terminal
-4. Install dependencies: `yarn install`
-5. Build the app: `yarn run build`
+4. Install dependencies: `npm install`
+5. Build the app: `npm run build`
 
 ## How to use:
 1. Put your `.ckl` checklist files into `input/`
-2. Run the script: `yarn run start`
+2. Run the script: `npm run start`
 3. Converted spreadsheets will show up in `output/`
 
 ## Contributing, Issues and Support
