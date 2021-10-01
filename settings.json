@@ -6,6 +6,7 @@
         "securityChecks": "F",
         "resourcesRequired": "G",
         "scheduledCompletionDate": "H",
+        "sourceIdentifyingVulnerability": "K",
         "status": "L",
         "comments": "M",
         "rawSeverity": "N",

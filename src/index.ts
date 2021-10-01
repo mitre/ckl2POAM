@@ -69,7 +69,7 @@ if (files.length === 0) {
                         message: `An error occoured parsing the file: ${readFileError}`
                     })
                 } else {
-                    let infos: {title?: string, stigid?: string} = {};
+                    let infos: {[key: string]: string} = {};
                     let vulnerabilities: STIG.Vulnerability[] = []
                     const iStigs: STIG.iSTIG[] = []
                     const stigs = result.CHECKLIST.STIGS
@@ -146,6 +146,8 @@ if (files.length === 0) {
                                 // Scheduled Completion Date
                                 // Default is one year from today
                                 sheet.cell(`${settings.rows.scheduledCompletionDate}${currentRow}`).value(aYearFromNow)
+                                // Source Identifying Vulnerability
+                                sheet.cell(`${settings.rows.sourceIdentifyingVulnerability}${currentRow}`).value(`Identified by ${infos.title} :: Version ${infos.version}, ${infos.releaseinfo}`)
                                 // Status
                                 sheet.cell(`${settings.rows.status}${currentRow}`).value(cleanStatus(vulnerability.STATUS))
                                 // Comments
