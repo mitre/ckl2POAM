@@ -152,7 +152,7 @@ export function cci2nist(cci: string) {
         if (cci in cci2nistmap) {
             return cci2nistmap[cci].replace(' ', '')
         } else {
-            return prompt(`What is the NIST ID for CCI ${cci}? `)
+            return prompt(`What is the NIST Control for CCI ${cci}? `)
         }
     } else {
         return "UM-1"
