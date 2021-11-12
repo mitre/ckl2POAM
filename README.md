@@ -1,5 +1,5 @@
 # ckl2POAM
-Standalone tool for converting DISA Checklists to eMASS POA&M Excel spreadsheet.
+Standalone tool for converting DISA Checklists to eMASS POA&M Excel spreadsheets.
 
 ## How to install:
 1. Clone the repository: `git clone https://github.com/mitre/ckl2POAM`
